@@ -49,16 +49,20 @@ exports.getAllPosts = async (req, res) => {
 };
 
 // Get a single blog post
+const backendURL = "https://blogbackend-zz2d.onrender.com"; 
+
 exports.getPostById = async (req, res) => {
     try {
-        const post = await Post.findById(req.params.id).populate("author", "username email");
-        if (!post) return res.status(404).json({ success: false, message: "Post not found" });
+        const post = await Post.findById(req.params.id).populate("author", "username _id");
 
-        // Increase view count
-        post.views += 1;
-        await post.save();
+        if (!post) {
+            return res.status(404).json({ success: false, message: "Post not found" });
+        }
 
-        res.status(200).json({ success: true, post });
+        // ✅ Ensure full image URL is included in the response
+        const fullCoverImage = post.coverImage ? `${backendURL}${post.coverImage}` : null;
+
+        res.status(200).json({ success: true, post: { ...post.toObject(), coverImage: fullCoverImage } });
     } catch (error) {
         res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
