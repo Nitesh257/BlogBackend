@@ -12,6 +12,8 @@ router.delete("/:id", authMiddleware, deletePost); // Delete post (Auth required
 router.put("/:id/like", authMiddleware, postController.likePost);
 router.put("/:id/unlike", authMiddleware, postController.unlikePost);
 router.post("/:id/comments", authMiddleware, postController.addComment);
+router.post("/:id/upload", authMiddleware, upload.single("coverImage"), postController.uploadImage);
+
 
 router.post(
   "/:id/upload",

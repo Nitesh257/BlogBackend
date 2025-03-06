@@ -1,16 +1,16 @@
 const Post = require("../models/post-model");
 const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
 const path=require("path");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 // image upload 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, "../uploads"));
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+      folder: "blog_images", // ✅ Folder name in Cloudinary
+      allowed_formats: ["jpg", "png", "jpeg", "webp"],
     },
-    filename: (req, file, cb) => {
-        const uniqueName = `${Date.now()}-${file.originalname}`;
-        cb(null,uniqueName);
-    },
-});
+  });
 
 // Initialize multer
 const upload = multer({ storage });
@@ -185,11 +185,14 @@ exports.uploadImage = async (req, res) => {
         return res.status(400).json({ success: false, message: "No image uploaded" });
       }
   
-      // ✅ Use $set to update the coverImage field
+      // ✅ Cloudinary automatically returns the secure URL
+      const imageUrl = req.file.path; 
+  
+      // ✅ Update the post with Cloudinary image URL
       const updatedPost = await Post.findByIdAndUpdate(
         id,
-        { $set: { coverImage: `/uploads/${req.file.filename}` } },
-        { new: true, runValidators: true } // Return updated document and ensure validation
+        { $set: { coverImage: imageUrl } },
+        { new: true, runValidators: true }
       );
   
       if (!updatedPost) {
@@ -198,7 +201,7 @@ exports.uploadImage = async (req, res) => {
   
       res.status(200).json({
         success: true,
-        message: "Image uploaded and post updated successfully",
+        message: "Image uploaded successfully",
         imageUrl: updatedPost.coverImage,
         post: updatedPost,
       });

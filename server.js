@@ -9,6 +9,15 @@ const connectDb=require("./utils/db");
 const errorMiddleware = require("./middlewares/error-middleware");
 const postRoute=require("./router/post-router")
 
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: "dpdl9q3ir",
+  api_key: "625648888219991",
+  api_secret: "5OgzIgJsbo5vK4tD8rMAM6x5QSA",
+});
+
+
 const path = require("path");
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
