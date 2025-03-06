@@ -59,8 +59,10 @@ exports.getPostById = async (req, res) => {
             return res.status(404).json({ success: false, message: "Post not found" });
         }
 
-        // ✅ Ensure full image URL is included in the response
-        const fullCoverImage = post.coverImage ? `${backendURL}${post.coverImage}` : null;
+        
+        const fullCoverImage = post.coverImage?.startsWith("http")
+            ? post.coverImage  // If it's already a full URL (Cloudinary), use it as is
+            : `https://blogbackend-zz2d.onrender.com${post.coverImage}`;
 
         res.status(200).json({ success: true, post: { ...post.toObject(), coverImage: fullCoverImage } });
     } catch (error) {
