@@ -23,13 +23,12 @@ const path = require("path");
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // handling cors policy
-const corsOptions={
-    origin:"https://blog-frontend-ruby-chi.vercel.app",
-    methods:"GET,POST,PUT,DELETE,PATCH,HEAD",
-    credentials:true,
+const corsOptions = {
+    origin: ["https://blog-frontend-ruby-chi.vercel.app", "http://localhost:5173"],
+    methods: "GET,POST,PUT,DELETE,PATCH,HEAD",
+    credentials: true,
 };
 app.use(cors(corsOptions));
-
 app.use(express.json());
 app.use("/api/auth",authRoute);
 app.use("/api/form",contactRoute);
